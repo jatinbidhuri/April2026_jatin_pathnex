@@ -1,0 +1,57 @@
+# day 27 - Serverless Scaling with lambda and DynamoDB
+
+
+ ## Ansible - Deploy Serverless Lambda Functions
+   -name: Deploy Serverless Lambda Functions
+    hosts: localhost
+    tasks:
+      -name: Create Lambda function
+       command: aws lambda create-function --function-name pathnex-lambda --runtime nodejs14.x --role arm:aws:iam::12345554343:role/lambda-role --handler --zip-file fileb;//lambda.zip
+
+ ## Terraform - Create DnamoDB Table for Serverless Application
+    resource "aws_dynamodb_table" "pathnex_table" {
+      name           = "pathnex-table"
+      hash_key       = "id"
+      billing_node   = "PAY_PER_REQUEST"
+      attribute {
+        name = "id"
+        type = "S"
+      }
+    }
+
+
+ ## Kubernetes - Deploy Serverless Using Kubeless
+    apiVersion: kubeless.io/v1beta1
+    kind: Function
+    metadata:
+      name: pathnex-lambda
+      namespace: default
+    spec:
+      runtime: nodejs14
+      handler: index.handler
+      function: |
+        module.expots = function(event, context) {
+          context.succeed('Hello World');
+        );
+
+ ## Jenkinsfile - Lambda Function Deployment Pipeline
+    pipeline{
+       agent any
+       stages {
+          stage('Build') {
+              steps {
+                  echo 'Building Lambda function package...'
+                  sh 'zip -r lambda.zip lambda/'
+               }
+            }
+            stage('Deploy to Lambda') {
+                steps {
+                   script {
+                       sh 'aws lambda update-function-code --function-name pathnex-lambda --zip-file filelab://lambda.zip'
+                     }
+                   }
+                }
+             }
+          }
+ 
+
