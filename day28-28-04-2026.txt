@@ -1,0 +1,47 @@
+## day 28 - Advanced Networking with VPCs and Peering
+ ## Ansibile - Set up VPC Peering Between Aws Accounts
+
+ #'''yaml
+ - name: Setup VPC Peering connection
+   command: aws ec2 create-vpc-peering-connection --vpc-id12345667 --peer-vpc-id voc-87764537
+
+
+### Terraform - VPC Peering Connection
+   
+   resource "aws_vpc_peering_connection" "pathnex_peering" {
+   vpc-id    = aws_vpc.pathnex_vpc.id
+   peer_vpc_id = aws_vpc.peer_vpc.id
+ }
+
+   resource "aws_route" "pathnex_route" {
+     route_table_id           = aws_route_table.pathnex_rt.id
+     destination_Cidr_block   = "10.0.0.0/16"
+     vpc_peering_connection_id = aws_vpc_peering_connection.pathnex_peering.id
+   }
+
+ ### kubernetes - Multi-Cluster VPC Peering and Network Policy
+     apiVersion: networking.k8s.io/v1
+     kind: NetworkPolicy
+     metdata: 
+        name: pathnex-vpc-policy
+     spec:
+       podSelector:
+         mathcLabels:
+           app: pathnex-app
+     ingress:
+       - from:
+          - podSelector:
+             matchLabels:
+                 app: pathnex-d
+
+
+
+
+
+
+
+
+
+
+
+
